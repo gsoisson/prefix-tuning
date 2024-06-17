@@ -2,7 +2,7 @@ import logging
 
 _ch = logging.StreamHandler()
 _ch.setLevel(logging.DEBUG)
-_ch.setFormatter(logging.Formatter('(%(module)s) [%(levelname)s] - %(message)s'))
+_ch.setFormatter(logging.Formatter("(%(module)s) [%(levelname)s] - %(message)s"))
 
 
 def get_logger(lv=logging.INFO):
@@ -19,6 +19,3 @@ def get_logger(lv=logging.INFO):
     logger.setLevel(lv)
     logger.addHandler(_ch)
     return logger
-
-
-_logger = get_logger()

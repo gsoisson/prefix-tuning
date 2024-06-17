@@ -1,24 +1,23 @@
-[tool.poetry]
-name = "adaptation-tuning-peft"
+[project]
+name = "prefix-tuning"
 version = "0.1.0"
-description = ""
-authors = ["Yucheng <g1677321@gmail.com>"]
+description = "Default template for PDM package"
+authors = [
+    { name = "<Guillaume Soisson>", email = "<guillaume.soisson@gitguardian.com>" },
+]
+requires-python = "==3.11.*"
 readme = "README.md"
+license = { text = "MIT" }
+dependencies = [
+    "pandas>=2.2.2",
+    "peft>=0.11.1",
+    "tqdm>=4.66.4",
+    "datasets>=2.20.0",
+    "nltk>=3.8.1",
+    "jupyter>=1.0.0",
+    "transformers>=4.41.2",
+    "torch>=2.3.1",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8,<3.9"
-numpy = "<=1.26.3"
-pandas = "<=2.1.4"
-peft = "^0.7.1"
-transformers = "^4.36.2"
-wandb = "^0.16.2"
-tqdm = "^4.66.1"
-datasets = "^2.16.1"
-evaluate = "^0.4.1"
-fire = "^0.5.0"
-scikit-learn = "<=1.4.0"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.pdm]
+distribution = false
