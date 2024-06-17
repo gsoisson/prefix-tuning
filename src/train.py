@@ -2,7 +2,6 @@ import datetime
 import os.path
 from typing import Any, Dict
 
-from inference import generate_text
 from peft import PrefixTuningConfig, TaskType, get_peft_model
 from transformers import (
     AutoModelForCausalLM,
@@ -11,23 +10,25 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
-from utils import get_logger
 
-from data import prepare_dataset
+from src.data import prepare_dataset
+from src.inference import generate_text
+from src.utils import get_logger
 
 # Initialize logger
 logger = get_logger()
 
 
 def train_peft_model_w_prefix_tuning(
-    train_set_path: str = "../data/train.csv",
-    test_set_path: str = "../data/test.csv",
+    train_set_path: str = "data/train.csv",
+    test_set_path: str = "data/test.csv",
     pretrain_model: str = "openai-community/gpt2",
-    model_path: str = "../model/",
+    model_path: str = "model/",
     text_col: str = "text",
     batch_size: int = 8,
     n_epochs: int = 2,
     learning_rate: float = 3e-5,
+    do_prefix_tuning: bool = True,
     n_virtual_tokens: int = 20,
 ):
     """Train a text generation model with prefix tuning in PEFT.
@@ -81,13 +82,6 @@ def train_peft_model_w_prefix_tuning(
     # Data collator that will dynamically pad the inputs received
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-    # PromptEncoder
-    peft_config = PrefixTuningConfig(
-        task_type=TaskType.CAUSAL_LM,
-        inference_mode=False,
-        num_virtual_tokens=n_virtual_tokens,
-    )
-
     # Create causal language model for text generation
     model = AutoModelForCausalLM.from_pretrained(pretrain_model)
 
@@ -97,14 +91,21 @@ def train_peft_model_w_prefix_tuning(
     generated_text = generate_text(prompt, model, tokenizer)
     logger.info(f"Prompt: {prompt}\nGenerated text: {generated_text[0]}")
 
-    # Get Peft model object from a model and a config
-    model = get_peft_model(model, peft_config)
+    if do_prefix_tuning:
+        # PromptEncoder
+        peft_config = PrefixTuningConfig(
+            task_type=TaskType.CAUSAL_LM,
+            inference_mode=False,
+            num_virtual_tokens=n_virtual_tokens,
+        )
+        # Get Peft model object from a model and a config
+        model = get_peft_model(model, peft_config)
 
-    # Get number of trainable parameters
-    trainable_params, all_param = model.get_nb_trainable_parameters()
-    logger.info(
-        f"trainable params: {trainable_params:,d} || all params: {all_param:,d} || trainable%: {100 * trainable_params / all_param}"
-    )
+        # Get number of trainable parameters
+        trainable_params, all_param = model.get_nb_trainable_parameters()
+        logger.info(
+            f"trainable params: {trainable_params:,d} || all params: {all_param:,d} || trainable%: {100 * trainable_params / all_param}"
+        )
 
     # Create output directory
     folder_name = f"{datetime.datetime.now().strftime('%y%m%d-%H%M%S')}"

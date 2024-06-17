@@ -27,7 +27,7 @@ def prepare_dataset(
     ]
 
     # Limit to a reasonable size, e.g., first 5000 sentences
-    train_sentences = train_sentences[:1000]
+    train_sentences = train_sentences[:5000]
 
     # Add a smiley to the end of each sentence
     train_sentences = [sentence + " :)" for sentence in train_sentences]

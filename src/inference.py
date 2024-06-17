@@ -4,7 +4,7 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
 )
-from utils import get_logger
+from src.utils import get_logger
 
 # Initialize logger
 logger = get_logger()
@@ -53,7 +53,7 @@ def generate_text(prompt, model, tokenizer, max_length=50):
     return generated_texts
 
 
-def run_inference(prompt, model_dir: str):
+def run_inference(prompt: str, model_dir: str):
     # Log the start of the inference process
     logger.info(f"Running inference with model directory: {model_dir}")
 
